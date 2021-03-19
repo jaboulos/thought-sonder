@@ -1,24 +1,39 @@
 import { MikroORM } from '@mikro-orm/core';
 import { __prod__ } from './constants';
-import { Post } from './entities/Post';
-import mikroConfig from './mikro-orm.config';
+// import { Post } from './entities/Post';
+import microConfig from './mikro-orm.config';
+import express from 'express';
+import { ApolloServer } from 'apollo-server-express';
+import { buildSchema } from 'type-graphql';
+import { HelloResolver } from './resolvers/hello';
 
 // Create this function 'main' to resolve promises for the methods within.
 const main = async () => {
   // Connect to db
-  const orm = await MikroORM.init(mikroConfig);
+  const orm = await MikroORM.init(microConfig);
   // Automatically run migrations
   await orm.getMigrator().up();
 
-  // Run some sql - ex: Create a post
-  // const post = orm.em.create(Post, { title: 'my first post' });
+  const app = express();
 
-  // Insert post into table
-  // await orm.em.persistAndFlush(post);
+  const apolloServer = new ApolloServer({
+    // pass in gql schema
+    schema: await buildSchema({
+      resolvers: [HelloResolver],
+      validate: false,
+    }),
+  });
 
-  // Get all posts and console log them
-  // const posts = await orm.em.find(Post, {});
-  // console.log(posts);
+  // create gql endpoint on express
+  apolloServer.applyMiddleware({ app });
+
+  // app.get('/', (_, res) => {
+  //   res.send('sup');
+  // });
+
+  app.listen(4000, () => {
+    console.log('server started on localhost:4000');
+  });
 };
 
 main().catch((err) => {
