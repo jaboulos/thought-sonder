@@ -1,13 +1,10 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 import { Field, ObjectType } from 'type-graphql';
 
-// Can stack decorators ~~ this is an ObjectType AND and Entity
-// Like a db table
 @ObjectType()
 @Entity()
-export class Post {
-  // These are columns in a table
-  @Field() // Field decorator exposes this to gql schema
+export class User {
+  @Field()
   @PrimaryKey()
   id!: number;
 
@@ -16,10 +13,14 @@ export class Post {
   createdAt = new Date();
 
   @Field(() => String)
-  @Property({ type: 'date', onUpdate: () => new Date() }) // hook that creates a date anytime theres an update
+  @Property({ type: 'date', onUpdate: () => new Date() })
   updatedAt = new Date();
 
   @Field()
+  // Make username unique so no two users can have the same username
+  @Property({ type: 'text', unique: true })
+  username!: string;
+
   @Property({ type: 'text' })
-  title!: string;
+  password!: string;
 }

@@ -1,4 +1,4 @@
-import { Resolver, Query, Ctx, Arg, Int, Mutation } from 'type-graphql';
+import { Resolver, Query, Ctx, Arg, Mutation } from 'type-graphql';
 import { Post } from '../entities/Post';
 import { MyContext } from 'src/types';
 
@@ -23,7 +23,7 @@ export class PostResolver {
     return ctx.em.findOne(Post, { id });
   }
 
-  // CREATE ONE
+  // CREATE
   // ctx is destructured here
   @Mutation(() => Post) // return a post after creating one
   async createPost(
@@ -35,7 +35,7 @@ export class PostResolver {
     return post;
   }
 
-  // UPDATE ONE
+  // UPDATE
   @Mutation(() => Post, { nullable: true }) // return a post after creating one or null
   async updatePost(
     @Arg('id') id: number,
@@ -55,7 +55,7 @@ export class PostResolver {
     return post;
   }
 
-  // DELETEE ONE
+  // DELETE
   @Mutation(() => Boolean)
   async deletePost(
     @Arg('id') id: number,

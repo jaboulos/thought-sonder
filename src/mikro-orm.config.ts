@@ -1,7 +1,9 @@
+import path from 'path';
+import { MikroORM } from '@mikro-orm/core';
+
 import { __prod__ } from './constants';
 import { Post } from './entities/Post';
-import { MikroORM } from '@mikro-orm/core';
-import path from 'path';
+import { User } from './entities/User';
 
 // Can access this info from the mikroORM cli
 export default {
@@ -9,7 +11,7 @@ export default {
     path: path.join(__dirname, './migrations'), // path to the folder with migrations.  Path creates absolute path and joins these two file paths
     pattern: /^[\w-]+\d+\.[tj]s$/, // regex pattern for the migration files.  [tj]s allows ts and js files.
   },
-  entities: [Post], // Corresponds to all db tables
+  entities: [Post, User], // Corresponds to all db tables
   dbName: 'lireddit',
   user: 'postgres',
   password: 'password',
