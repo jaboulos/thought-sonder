@@ -1,13 +1,13 @@
 import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
-import { Field, ObjectType, Int } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 
 // Can stack decorators ~~ this is an ObjectType AND and Entity
 // Like a db table
 @ObjectType()
 @Entity()
 export class Post {
-  // These decorators correspond to columns
-  @Field(() => Int) // field exposes this to gql schema
+  // These are columns in a table
+  @Field() // Field decorator exposes this to gql schema
   @PrimaryKey()
   id!: number;
 
