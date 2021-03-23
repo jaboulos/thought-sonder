@@ -9,6 +9,7 @@ import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
 import { HelloResolver } from './resolvers/hello';
 import { PostResolver } from './resolvers/post';
+import { UserResolver } from './resolvers/user';
 
 // Create this function 'main' to resolve promises for the methods within.
 const main = async () => {
@@ -22,7 +23,7 @@ const main = async () => {
   const apolloServer = new ApolloServer({
     // pass in gql schema
     schema: await buildSchema({
-      resolvers: [HelloResolver, PostResolver],
+      resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
     // Special object that is accessible by all resolvers
@@ -32,10 +33,6 @@ const main = async () => {
 
   // create gql endpoint on express
   apolloServer.applyMiddleware({ app });
-
-  // app.get('/', (_, res) => {
-  //   res.send('sup');
-  // });
 
   app.listen(4000, () => {
     console.log('server started on localhost:4000');
