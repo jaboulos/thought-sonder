@@ -6,6 +6,7 @@ import {
   Field,
   Ctx,
   ObjectType,
+  Query,
 } from 'type-graphql';
 import { MyContext } from '../types';
 import { User } from '../entities/User';
@@ -44,12 +45,23 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { req, em }: MyContext) {
+    // you are not logged in
+    if (!req.session.userId) {
+      return null;
+    }
+    // if user is logged in, fetch user and return
+    const user = await em.findOne(User, { id: req.session.userId });
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     // can pass one large object instead of multiple args
     // this already infers the type, but, to be thorough, have added () => UsernamePasswordInput for option
     @Arg('options', () => UsernamePasswordInput) options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     // validation for username
     if (options.username.length <= 2) {
@@ -94,10 +106,11 @@ export class UserResolver {
           ],
         };
       }
-
-      // duplicate uesrname error
     }
-
+    // store user id session
+    // this will set a cookie on the user
+    // keep them logged in
+    req.session.userId = user.id;
     // return destructured user from UserResponse object if no issues with username / password validation
     return { user };
   }
@@ -106,7 +119,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg('options', () => UsernamePasswordInput) options: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     // lookup user by username and check to see if that user exists in db
     const user = await em.findOne(User, { username: options.username });
@@ -134,6 +147,9 @@ export class UserResolver {
         ],
       };
     }
+
+    // can store things in session, here, store user id to access later
+    req.session.userId = user.id;
     // if we found a user and pw is correct, they have successfully logged in, no errors, return user
     return { user };
   }
