@@ -10,7 +10,6 @@ export const Wrapper: React.FC<WrapperProps> = ({
   variant = 'regular',
 }) => {
   return (
-    // Box element in chakra is kind of like a div, can style as i see fit
     <Box
       mt={8}
       mx='auto'
