@@ -5,7 +5,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
-} from '@chakra-ui/react';
+} from '@chakra-ui/core';
 
 // Input field component should take any props a regular input field would take
 // name attribute is required
