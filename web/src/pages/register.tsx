@@ -6,10 +6,12 @@ import { Wrapper } from '../components/Wrapper';
 import { InputField } from '../components/InputField';
 import { useRegisterMutation } from '../generated/graphql';
 import { toErrorMap } from '../utils/toErrorMap';
+import { useRouter } from 'next/router';
 
 interface registerProps {}
 
 export const Register: React.FC<registerProps> = ({}) => {
+  const router = useRouter();
   // urql hook
   // first item in array is some info about whats going on about the mutation, if not passing anything in, just leave as empty obj or put a comma
   // second item in array is our function, can name it anything
@@ -25,9 +27,8 @@ export const Register: React.FC<registerProps> = ({}) => {
             // if theres an error
             setErrors(toErrorMap(response.data.register.errors));
           } else if (response.data?.register.user) {
-            // works if get a user back after registering
-            // navigate them to the landing page
-            console.log(response.data.register.user);
+            // successfully registered, navigate to home page
+            router.push('/');
           }
         }}
       >
