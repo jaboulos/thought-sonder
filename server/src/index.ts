@@ -14,7 +14,7 @@ import { UserResolver } from './resolvers/user';
 import redis from 'redis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
-import { MyContext } from './types';
+import cors from 'cors';
 
 // Create this function 'main' to resolve promises for the methods within.
 const main = async () => {
@@ -28,6 +28,15 @@ const main = async () => {
   // this is run before the apollo server runs, important to have this order because session middleware will be used inside of apollo
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
+
+  // Apply CORS on all routes
+  app.use(
+    // could also declare the route we want this middleware to run on, for ex: '/', right above cors here, otherwise this will apply to all routes
+    cors({
+      origin: 'http://localhost:3000',
+      credentials: true,
+    })
+  );
 
   app.use(
     session({
@@ -57,11 +66,16 @@ const main = async () => {
     }),
     // Special object that is accessible by all resolvers
     // A function that returns an object for the context
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
   // create gql endpoint on express
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    // cors: { origin: 'http://localhost:3000' }, // by default apollo will add CORS for us. Fix CORS issues (FE sending requests to BE) by changing the CORS default config from apollo from wildcard to the error message value seen in the FE, in this case the value was 'http://localhost:3000'.
+    // another way to do this instead of setting cors for each individual route is to set it globally 2:42:55
+    cors: false,
+  });
 
   app.listen(4000, () => {
     console.log('server started on localhost:4000');
